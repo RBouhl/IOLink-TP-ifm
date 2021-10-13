@@ -23,17 +23,18 @@ namespace IOLink_TP_ifm
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
  
     public class OGD592_Raw_Data
     {
         public Dictionary<string,string> data { get; set; }
     }
-    public class DV2130_Command
+    /*public class DV2130_Command
     {
         public string cid { get; set; }
 
         public Dictionary<string, Dictionary<string, string>> data { get; set; }
-    }
+    }*/
 
     public partial class MainWindow : Window
     {
@@ -76,7 +77,7 @@ namespace IOLink_TP_ifm
             // Il faut en déduire les vraies requêtes HTTP/POST.
             // 
             // Spécifications de la verrine
-            // https://www.ifm.com/download/files/IFM_00043D_20200325_IODD11_en/$file/IFM_00043D_20200325_IODD11_en.pdf 
+            // https://www.ifm.com/download/files/IFM_00043D_20200325_IODD11_en/$file/IFM_00043D_20200325_IODD11_en.pdf (page 18/18)
             // Il faut envoyer deux octets pour commander l'éclairage et le buzzer de la verrine
             // Par exemple "FF" ou "00" (en hexa)
 
@@ -85,13 +86,16 @@ namespace IOLink_TP_ifm
 
             // Ne pas chercher à écrire le json directement dans une variable
             // Les quotes servent en C# pour délimiter les variables texte
-            // ET elles servent en JSON pour délimiter les champs
+            // ET elles servent en JSON pour délimiter les champs => boîte de Pandore de l'échappement de caractères.
 
             // Ne fonctionne pas en l'état actuel. Réponse du master "401 Bad Request" sans plus de précisions.
-            // Il faudrait pouvoir accéder aux logs du serveur Web du Master IOLINK pour pouvoir débugger correctement.
-            // Un serveur Web sans logs lisibles est un demi-serveur Web.
-            
-             var values = 
+            // Il faudrait pouvoir accéder aux logs du Master IOLINK pour pouvoir débugger correctement.
+            // Ou avoir un message d'erreur plus explicite (valeur hors range ? Longueur des données incorrecte ?)
+            // L'accès aux logs n'est pas dispo sur cette version du firmware ( AL1x2x_cn_ei_v2.3.23 )
+
+            // En attente d'une mise à jour du firmware, qui donne accès aux logs et infos internes du master IOLINK, pour terminer cette partie.
+
+            var values = 
                 new Dictionary<string, Dictionary<string, string>>
             {
                 {
