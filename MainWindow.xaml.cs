@@ -27,7 +27,8 @@ namespace IOLink_TP_ifm
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    /// 
+    ///
+    ///
 
     public class OGD592_Raw_Data
     {
