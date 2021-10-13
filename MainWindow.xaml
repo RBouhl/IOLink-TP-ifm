@@ -11,7 +11,7 @@
         <TextBlock Name="TBDistance" HorizontalAlignment="Left" Margin="173,112,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="72" Width="142"><Run Language="fr-fr" Text="Distance"/></TextBlock>
         <TextBlock Name="TBReflex" HorizontalAlignment="Left" Margin="173,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="106" Width="142"><Run Language="fr-fr" Text="Réflexivité"/></TextBlock>
         <Button Name="Rouge" Content="Rouge" HorizontalAlignment="Left" Margin="480,68,0,0" VerticalAlignment="Top" Height="42" Width="76" Click="Button_Click_Rouge"/>
-        <Button Name="Vert" Content="Vert" HorizontalAlignment="Left" Margin="561,68,0,0" VerticalAlignment="Top" Height="42" Width="73" Click="Button_Click_Vert"/>
-        <TextBox Name="PostResult" HorizontalAlignment="Left" Margin="480,148,0,0" Text="Résultat Requête" TextWrapping="Wrap" VerticalAlignment="Top" Width="154" Height="46"/>
+        <Button Name="Vert" Content="Vert" HorizontalAlignment="Left" Margin="624,69,0,0" VerticalAlignment="Top" Height="42" Width="73" Click="Button_Click_Vert"/>
+        <TextBox Name="TBPostResult" HorizontalAlignment="Left" Margin="480,148,0,0" Text="Résultat Requête" TextWrapping="Wrap" VerticalAlignment="Top" Width="217" Height="159"/>
     </Grid>
 </Window>

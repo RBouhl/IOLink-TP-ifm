@@ -18,26 +18,21 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-
-
-
-
 namespace IOLink_TP_ifm
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    ///
-    ///
-
+ 
     public class OGD592_Raw_Data
     {
         public Dictionary<string,string> data { get; set; }
     }
     public class DV2130_Command
     {
-        //public string HexaCommand { get; set; }
-        public Dictionary<string,string> data { get; set; }
+        public string cid { get; set; }
+
+        public Dictionary<string, Dictionary<string, string>> data { get; set; }
     }
 
     public partial class MainWindow : Window
@@ -46,10 +41,9 @@ namespace IOLink_TP_ifm
         {
             InitializeComponent();
         }
-
-        private async void HTTPGetDistance()
+        private async void HTTPGetAndDisplayDistance()
         {
-            string url = "http://10.122.136.208/iolinkmaster/port[4]/iolinkdevice/pdin/getdata";
+            string url = "http://10.122.136.183/iolinkmaster/port[4]/iolinkdevice/pdin/getdata";
             using var client = new HttpClient();
             var response = await client.GetAsync(url);
             var JSON = response.Content.ReadAsStringAsync().Result;
@@ -70,52 +64,63 @@ namespace IOLink_TP_ifm
         }
         private void Button_Click_View(object sender, RoutedEventArgs e)
         {
-            HTTPGetDistance();
-            /*string URL_Raw;
-            // Adresse des données, récupérée depuis le Core Visualiser
-            URL_Raw = "http://10.122.136.208/iolinkmaster/port[4]/iolinkdevice/pdin/getdata";
-            // Téléchargement des données (format JSON)
-            var JSON = new WebClient().DownloadString(URL_Raw);
-            // Désérialisation du JSON et transfert dans le modèle objet 
-            OGD592_Raw_Data OGD_RawObject = JsonSerializer.Deserialize<OGD592_Raw_Data>(JSON);
-            // Récupération des données depuis l'objet
-            string OGD_ValueHex = OGD_RawObject.data["value"];
-            // Le découpage se fait grâce aux infos données dans le PDF qui accompagne l'IODD.
-            // On récupère la valeur hexa en découpant la chaîne de caractère.
-            string DistanceHex = OGD_ValueHex.Substring(0, 4);
-            string ReflexHex = OGD_ValueHex.Substring(8, 4);
-            // Conversion et mise en forme.
-            int Distance = Convert.ToInt32(DistanceHex, 16);
-            int Reflex = Convert.ToInt32(ReflexHex, 16);
-            string TXTDistance = "Distance : " + Distance.ToString() + " mm";
-            string TXTReflex = "Réflectivité : " + Reflex.ToString() + " %";
-            // Affichage (via nos TextBlock)
-            TBDistance.Text = TXTDistance;
-            TBReflex.Text = TXTReflex;*/
+            HTTPGetAndDisplayDistance();
         }
         private async void PostColor(string ColorCode)
         {
-            var values = new Dictionary<string, string>
+            // Documentation :
+            // Format de la requête POST
+            // https://www.ifm.com/mounting/7391156UK.pdf 
+            // Attention : la documentation ne donne pas directement les informations à envoyer
+            // Pseudoformat "Request object" qui mélange une partie de l'URL ( /device/application/tag) avec les données (data)
+            // Il faut en déduire les vraies requêtes HTTP/POST.
+            // 
+            // Spécifications de la verrine
+            // https://www.ifm.com/download/files/IFM_00043D_20200325_IODD11_en/$file/IFM_00043D_20200325_IODD11_en.pdf 
+            // Il faut envoyer deux octets pour commander l'éclairage et le buzzer de la verrine
+            // Par exemple "FF" ou "00" (en hexa)
+
+            // Format imposé : "data":{"newvalue":"XXXXX"}
+            // On est donc obligé d'utiliser une structure de donnée imbriquée
+
+            // Ne pas chercher à écrire le json directement dans une variable
+            // Les quotes servent en C# pour délimiter les variables texte
+            // ET elles servent en JSON pour délimiter les champs
+
+            // Ne fonctionne pas en l'état actuel. Réponse du master "401 Bad Request" sans plus de précisions.
+            // Il faudrait pouvoir accéder aux logs du serveur Web du Master IOLINK pour pouvoir débugger correctement.
+            // Un serveur Web sans logs lisibles est un demi-serveur Web.
+            
+             var values = 
+                new Dictionary<string, Dictionary<string, string>>
             {
-                { "newvalue", ColorCode }
+                {
+                    "data",
+                    new Dictionary<string, string>
+                    {
+                        { "newvalue", ColorCode }
+                    }
+                }
             };
-            var json_values = JsonSerializer.Serialize(values);
-            var data = new StringContent(json_values, Encoding.UTF8, "application/json");
-            var url = "http://10.122.136.208/iolinkmaster/port[2]/iolinkdevice/pdout/setdata";
+            var values_json = JsonSerializer.Serialize(values);
+            var data = new StringContent(values_json, Encoding.UTF8, "application/json");
+            var url = "http://10.122.136.183/iolinkmaster/port[1]/iolinkdevice/pdout/setdata";
+            //Test pour vérifier si on envoie bien une requête POST valide.
+            //var url = "https://httpbin.org/post";
             using var client = new HttpClient();
             var response = await client.PostAsync(url, data);
             string result = "Résultat Requête : " + response.Content.ReadAsStringAsync().Result;
-            PostResult.Text = result;
+            TBPostResult.Text = response.ToString();
         }
 
         private void Button_Click_Rouge(object sender, RoutedEventArgs e)
         {
-            PostColor("0800");
+            PostColor("01");
         }
 
     private void Button_Click_Vert(object sender, RoutedEventArgs e)
         {
-            PostColor("0800");
+            PostColor("02");
         }
     }
 }
